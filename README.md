@@ -23,10 +23,10 @@ MQTT is used in smart grids and energy monitoring systems to collect data from m
 Airlines and railways use MQTT to improve operational efficiency and passenger experience. Logistics companies use it for real-time asset tracking and route optimization.
 
 
-
-Here’s a breakdown of what this advanced MQTT program in C is doing—piece by piece:
-
 ---
+
+
+Here’s a breakdown of what this advanced MQTT program in C is doing:
 
 ### Includes & Macros
 ```c
