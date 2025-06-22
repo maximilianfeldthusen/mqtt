@@ -140,4 +140,124 @@ If you're deploying to ARM-based boards or microcontrollers, cross-compiling the
 ### 7. **Library Differences**
 Different MQTT C libraries (e.g. Paho vs. libmosquitto) have different APIs and capabilities. Choosing the right one and understanding its limitations is key.
 
+---
+
+If you're using a Linux system (like Ubuntu or Debian-based distros), here’s how to get everything set up:
+
+---
+
+###  Prerequisites
+
+**Install Eclipse Paho MQTT C client:**
+```bash
+sudo apt update
+sudo apt install libpaho-mqtt-dev
+```
+
+**Optional — For TLS support:**
+```bash
+sudo apt install libssl-dev
+```
+
+---
+
+###  Compile the Code
+
+Assuming your file is named `mqtt_sensor.c`, compile with:
+
+```bash
+gcc mqtt_sensor.c -o mqtt_sensor \
+    -lpaho-mqtt3cs -lssl -lcrypto
+```
+
+- `-lpaho-mqtt3cs`: for the Paho MQTT C synchronous library with SSL
+- `-lssl -lcrypto`: for TLS (OpenSSL)
+
+---
+
+###  Run It
+
+You’ll need to provide your CA certificate if using TLS:
+```bash
+./mqtt_sensor
+```
+
+If it can’t connect to your broker or authenticate the certificate, make sure you:
+- Point to a valid `ca.crt` file (like from Let’s Encrypt or your broker)
+- Match the broker hostname in the certificate’s CN/SAN fields
+- Open port `8883` on your firewall or broker side
+
+---
+
+---
+
+
+To run your MQTT sensor app as a background service on Linux, we can set it up as a **systemd** service. This lets it start automatically on boot, restart on failure, and run in the background cleanly.
+
+Here’s how to do it:
+
+---
+
+###  Step 1: Move the Binary
+
+Assuming you compiled your code to `mqtt_sensor`:
+
+```bash
+sudo cp mqtt_sensor /usr/local/bin/
+```
+
+---
+
+### Step 2: Create a systemd Service File
+
+Create a new file at `/etc/systemd/system/mqtt_sensor.service`:
+
+```bash
+sudo nano /etc/systemd/system/mqtt_sensor.service
+```
+
+Add this content:
+
+```ini
+[Unit]
+Description=MQTT Sensor Publisher Service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/mqtt_sensor
+Restart=always
+RestartSec=5
+User=pi
+Group=pi
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Make sure to change `User` and `Group` to whoever should run the service (like `ubuntu` or `yourusername`).
+
+---
+
+###  Step 3: Enable and Start the Service
+
+```bash
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable mqtt_sensor.service
+sudo systemctl start mqtt_sensor.service
+```
+
+---
+
+### Check Status and Logs
+
+```bash
+sudo systemctl status mqtt_sensor.service
+journalctl -u mqtt_sensor.service -f
+```
+
+---
+
+Now your sensor app runs quietly in the background—even after reboot! Want to add logging to a file next, or make the service configurable with an `.env` file? That’s easy to do too.
+
 
