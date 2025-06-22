@@ -116,7 +116,6 @@ MQTTClient_destroy(...);
 
 
 
-
 Using MQTT with C can be powerful but comes with its own set of quirks. Here are some common challenges developers often face:
 
 ### 1. **Memory Management**
@@ -187,7 +186,7 @@ If it can’t connect to your broker or authenticate the certificate, make sure 
 - Match the broker hostname in the certificate’s CN/SAN fields
 - Open port `8883` on your firewall or broker side
 
----
+
 
 ---
 
@@ -258,6 +257,6 @@ journalctl -u mqtt_sensor.service -f
 
 ---
 
-Now your sensor app runs quietly in the background—even after reboot! Want to add logging to a file next, or make the service configurable with an `.env` file? That’s easy to do too.
+Now your sensor app runs quietly in the background—even after reboot!
 
 
