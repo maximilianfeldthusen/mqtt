@@ -26,7 +26,7 @@ Airlines and railways use MQTT to improve operational efficiency and passenger e
 ---
 
 
-Here’s a breakdown of what this advanced MQTT program in C is doing:
+Here’s a breakdown of what this simple MQTT program in C is doing:
 
 ### Includes & Macros
 ```c
@@ -116,7 +116,7 @@ MQTTClient_destroy(...);
 
 
 
-Using MQTT with C can be powerful but comes with its own set of quirks. Here are some common challenges developers often face:
+Using MQTT with C can be powerful but comes with its own set of quirks. Here are some common challenges:
 
 ### 1. **Memory Management**
 C doesn’t have garbage collection, so you need to manually allocate and free memory for MQTT messages, payloads, and client structures. A missed `free()` can lead to memory leaks, while a premature one can crash your app.
@@ -143,7 +143,6 @@ Different MQTT C libraries (e.g. Paho vs. libmosquitto) have different APIs and 
 
 If you're using a Linux system (like Ubuntu or Debian-based distros), here’s how to get everything set up:
 
----
 
 ###  Prerequisites
 
