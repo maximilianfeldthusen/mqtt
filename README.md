@@ -210,9 +210,5 @@ gcc -O2 -o sensor_client_v2 sensor_client_v2.c -lpaho-mqtt3c -lssl -lcrypto -lja
 journalctl -u mqtt-sensor.service -f
 ```
 
----
 
-If you want, I can also:
 
-* turn this into a **README.md optimized for GitHub**
-* or add **badges, diagrams, and architecture visuals** for a more professional repo look
