@@ -1,5 +1,5 @@
 
-Thought about thisI can see you've been working with the MQTT Sensor Client v2 documentation. Let me explain this code documentation in a structured GitHub markdown format that breaks down what each section means and why it matters:# MQTT Sensor Client v2 - Documentation Explanation
+## MQTT Sensor Client v2 - Documentation Explanation
 
 ## What This Documentation Covers
 
