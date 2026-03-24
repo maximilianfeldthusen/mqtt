@@ -1,7 +1,4 @@
 
-Here’s your content cleaned up and properly formatted as **GitHub Flavored Markdown (GFM)** with fixed structure, headings, tables, and code blocks:
-
----
 
 # MQTT Sensor Client v2 - Documentation Explanation
 
