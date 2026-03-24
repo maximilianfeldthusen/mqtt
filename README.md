@@ -1,6 +1,6 @@
 
 
-# MQTT Sensor Client v2 - Documentation Explanation
+## MQTT Sensor Client v2 - Documentation Explanation
 
 ## What This Documentation Covers
 
