@@ -1,7 +1,6 @@
 
-Perfect! Here’s a fully polished **README.md** for your GitHub repository, ready to go:
 
-````markdown
+
 # Advanced MQTT Embedded Publisher
 
 [![C](https://img.shields.io/badge/language-C-blue.svg)](https://www.gnu.org/software/gnu-c-manual/)  
