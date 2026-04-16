@@ -1,193 +1,91 @@
 
-Advanced MQTT Embedded Publisher
-This C program is an advanced MQTT client for embedded systems, with offline message queueing, JSON validation, TLS support, and a telemetry reporting feature for CPU and memory usage.
+Perfect! Here’s a fully polished **README.md** for your GitHub repository, ready to go:
 
-File: mqtt_publisher.c
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include <unistd.h>
-#include <time.h>
-#include <getopt.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/sysinfo.h>
-#include "MQTTClient.h"
-#include <jansson.h>
+````markdown
+# Advanced MQTT Embedded Publisher
 
-Includes
-Standard C libraries for I/O, strings, file handling, signals, and timing.
-sys/sysinfo.h for telemetry (CPU/memory usage).
-MQTTClient.h for MQTT communication.
-jansson.h for JSON parsing.
+[![C](https://img.shields.io/badge/language-C-blue.svg)](https://www.gnu.org/software/gnu-c-manual/)  
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)  
 
-Configuration Structure
-typedef struct {
-    char *address;
-    char *client_id;
-    char *topic;
-    char *telemetry_topic;
-    int qos;
-    long timeout_ms;
-    int interval_s;
-    char *ca_cert;
-    char *client_cert;
-    char *client_key;
-    char *key_password;
-    char *username;
-    char *password;
-} Config;
+An advanced MQTT client for embedded systems featuring:
 
-Holds all MQTT connection and program configuration options.
-Includes telemetry topic as new functionality.
+- Offline message queueing
+- JSON payload validation
+- TLS support with certificates
+- Telemetry reporting (CPU and memory usage)
+- Robust retry and error handling
 
-Signal Handling
-volatile sig_atomic_t running = 1;
+---
 
-static void handle_sigint(int sig) {
-    (void)sig;
-    printf("\nShutdown signal received. Cleaning up...\n");
-    running = 0;
-}
+## Features
 
-Gracefully handles Ctrl+C to stop the loop.
-volatile sig_atomic_t ensures safe modification inside signal handlers.
+- Modular and maintainable C code
+- Publishes telemetry and sensor data
+- Handles broker disconnections with local queue replay
+- Configurable via command-line options
+- Senior-style code: clear variable names, logging, and formatting
 
-Command-Line Parsing
-Config parse_args(int argc, char *argv[]) { ... }
+---
 
-Uses getopt_long to parse both short and long command-line options.
-Supports TLS, authentication, publish interval, topics, and more.
-Defaults are provided for MQTT broker, topic, QoS, and intervals.
+## Requirements
 
-JSON Validation
-int validate_payload(const char *payload) { ... }
+- C compiler (GCC recommended)
+- [Paho MQTT C Client](https://www.eclipse.org/paho/index.php?page=clients/c/index.php)
+- [Jansson JSON Library](https://digip.org/jansson/)
+- Linux or POSIX-compliant OS for `sysinfo()` telemetry
 
-Checks if the payload is a valid JSON object.
-Validates that the required fields exist and have the correct types: temperature, humidity, timestamp.
+---
 
-Offline Queue Management
-int init_queue() { ... }
-int save_to_queue(const char *payload) { ... }
-int replay_queue(MQTTClient client, const char *topic, int qos, long timeout_ms) { ... }
+## Installation
 
-Initializes a local directory for message queue.
-Saves failed messages to disk.
-On reconnect, replays messages and deletes them after successful publish.
-Invalid JSON messages are discarded.
+1. Clone the repository:
 
-MQTT Connection with Retry
-int connect_with_retry(MQTTClient *client, MQTTClient_connectOptions *opts, int max_attempts) { ... }
+```bash
+git clone https://github.com/yourusername/mqtt-embedded-publisher.git
+cd mqtt-embedded-publisher
+````
 
-Tries to connect multiple times if the broker is unreachable.
-Waits 3 seconds between attempts.
+2. Install dependencies:
 
-Telemetry Reporting (New Functionality)
-void publish_telemetry(MQTTClient client, const char *topic, int qos, long timeout_ms) {
-    struct sysinfo info;
-    if (sysinfo(&info) == 0) {
-        char payload[128];
-        snprintf(payload, sizeof(payload),
-            "{\"uptime\": %ld, \"loadavg\": %.2f, \"totalram\": %lu, \"freeram\": %lu}",
-            info.uptime,
-            (double)info.loads[0] / 65536.0,
-            info.totalram,
-            info.freeram
-        );
+```bash
+sudo apt-get install libpaho-mqtt-dev libjansson-dev
+```
 
-        MQTTClient_message msg = MQTTClient_message_initializer;
-        msg.payload = payload;
-        msg.payloadlen = (int)strlen(payload);
-        msg.qos = qos;
-        msg.retained = 0;
+3. Compile:
 
-        MQTTClient_deliveryToken token;
-        MQTTClient_publishMessage(client, topic, &msg, &token);
-        MQTTClient_waitForCompletion(client, token, timeout_ms);
-        printf("Telemetry published: %s\n", payload);
-    }
-}
+```bash
+gcc -o mqtt_publisher mqtt_publisher.c -lpaho-mqtt3c -ljansson
+```
 
-Periodically sends system telemetry (uptime, loadavg, totalram, freeram) to a separate MQTT topic.
-Useful for monitoring embedded devices remotely.
+---
 
-Main Logic
-int main(int argc, char *argv[]) {
-    Config cfg = parse_args(argc, argv);
-    signal(SIGINT, handle_sigint);
-    srand(time(NULL));
+## Usage
 
-    // Queue setup
-    if (init_queue() != 0) fprintf(stderr, "Warning: Offline queue disabled\n");
+```bash
+./mqtt_publisher [OPTIONS]
+```
 
-    MQTTClient client;
-    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-    MQTTClient_SSLOptions ssl_opts = MQTTClient_SSLOptions_initializer;
+### Options
 
-    MQTTClient_create(&client, cfg.address, cfg.client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
-    conn_opts.keepAliveInterval = 20;
-    conn_opts.cleansession = 1;
-    conn_opts.username = cfg.username;
-    conn_opts.password = cfg.password;
+| Option                      | Description                                           |
+| --------------------------- | ----------------------------------------------------- |
+| `--address`                 | MQTT broker address (default: `tcp://localhost:1883`) |
+| `--client-id`               | MQTT client ID (default: `embedded_publisher`)        |
+| `--topic`                   | Sensor data topic (default: `sensors/data`)           |
+| `--telemetry-topic`         | Telemetry topic (default: `sensors/telemetry`)        |
+| `--qos`                     | MQTT QoS level (0, 1, or 2; default: 1)               |
+| `--interval`                | Publish interval in seconds (default: 5)              |
+| `--username` / `--password` | MQTT authentication credentials                       |
+| `--ca-cert`                 | Path to CA certificate for TLS                        |
+| `--client-cert`             | Path to client certificate for TLS                    |
+| `--client-key`              | Path to client private key for TLS                    |
+| `--key-password`            | Password for private key (if required)                |
 
-    // TLS configuration
-    ssl_opts.enableServerCertAuth = 1;
-    ssl_opts.trustStore = cfg.ca_cert;
-    ssl_opts.keyStore = cfg.client_cert;
-    ssl_opts.privateKey = cfg.client_key;
-    ssl_opts.privateKeyPassword = cfg.key_password;
-    conn_opts.ssl = &ssl_opts;
+---
 
-    if (connect_with_retry(&client, &conn_opts, 10) != MQTTCLIENT_SUCCESS) return 1;
+## Example Output
 
-    // Replay offline messages
-    int replayed = replay_queue(client, cfg.topic, cfg.qos, cfg.timeout_ms);
-    printf("Replayed %d queued messages\n", replayed);
-
-    // Main loop
-    while (running) {
-        char payload[MAX_PAYLOAD_SIZE];
-        float temp = 20.0 + (rand() % 1000) / 100.0;
-        float hum  = 40.0 + (rand() % 1000) / 100.0;
-
-        snprintf(payload, sizeof(payload),
-                 "{\"temperature\": %.2f, \"humidity\": %.2f, \"timestamp\": %ld, \"count\": %d}",
-                 temp, hum, time(NULL), ++message_count);
-
-        if (validate_payload(payload) != 0) continue;
-
-        MQTTClient_message msg = MQTTClient_message_initializer;
-        msg.payload = payload;
-        msg.payloadlen = (int)strlen(payload);
-        msg.qos = cfg.qos;
-        msg.retained = 0;
-
-        MQTTClient_deliveryToken token;
-        if (MQTTClient_publishMessage(client, cfg.topic, &msg, &token) != MQTTCLIENT_SUCCESS) {
-            save_to_queue(payload);
-        }
-
-        publish_telemetry(client, cfg.telemetry_topic, cfg.qos, cfg.timeout_ms);
-        sleep(cfg.interval_s);
-    }
-
-    MQTTClient_disconnect(client, 10000);
-    MQTTClient_destroy(&client);
-    printf("Shutdown complete. Total messages: %d\n", message_count);
-    return 0;
-}
-
-
-Key Improvements
-Modular Functions: Clean separation for argument parsing, MQTT connection, validation, queueing, telemetry.
-Robust Error Handling: Validates JSON payloads and saves failed messages to disk.
-New Telemetry Feature: Sends system info to a dedicated MQTT topic.
-Senior-style code: Meaningful variable names, consistent formatting, clear logging.
-
-Example Output
+```text
 MQTT Connected
 Replayed 3 queued messages
 [1] Published: {"temperature":21.34,"humidity":42.11,"timestamp":1681700000,"count":1}
@@ -196,3 +94,39 @@ Telemetry published: {"uptime":12345,"loadavg":0.52,"totalram":104857600,"freera
 Telemetry published: {"uptime":12350,"loadavg":0.48,"totalram":104857600,"freeram":52200000}
 ...
 Shutdown complete. Total messages: 250
+```
+
+---
+
+## How It Works
+
+1. **Initialization:** Parses command-line arguments and sets up MQTT client.
+2. **Offline Queue:** Messages that fail to publish are stored locally.
+3. **MQTT Connection:** Attempts reconnect with retries if broker is unreachable.
+4. **Telemetry:** Periodically publishes system info (CPU load, memory usage) to a dedicated topic.
+5. **Main Loop:** Publishes simulated sensor data at configurable intervals.
+6. **Graceful Shutdown:** Handles Ctrl+C and cleans up resources.
+
+---
+
+## File Structure
+
+* `mqtt_publisher.c` — Main program file
+* `README.md` — Project documentation
+* `LICENSE` — MIT license
+
+---
+
+## License
+
+MIT License © 2026
+See [LICENSE](LICENSE) for details.
+
+```
+
+This is ready to paste directly into GitHub.  
+
+If you want, I can also **add a "Quick Start" section with example TLS and authentication setup**, which would make it extra GitHub-friendly for embedded developers.  
+
+Do you want me to add that?
+```
