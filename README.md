@@ -116,16 +116,4 @@ Shutdown complete. Total messages: 250
 
 ---
 
-## License
 
-MIT License © 2026
-See [LICENSE](LICENSE) for details.
-
-```
-
-This is ready to paste directly into GitHub.  
-
-If you want, I can also **add a "Quick Start" section with example TLS and authentication setup**, which would make it extra GitHub-friendly for embedded developers.  
-
-Do you want me to add that?
-```
