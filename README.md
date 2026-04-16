@@ -117,3 +117,23 @@ Shutdown complete. Total messages: 250
 ---
 
 
+## Requirements
+
+- C compiler (GCC recommended)
+- [Paho MQTT C Client](https://www.eclipse.org/paho/index.php?page=clients/c/index.php)
+- [Jansson JSON Library](https://digip.org/jansson/)
+- Linux or POSIX-compliant OS for `sysinfo()` telemetry
+
+---
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/mqtt-embedded-publisher.git
+cd mqtt-embedded-publisher
+Install dependencies:
+sudo apt-get install libpaho-mqtt-dev libjansson-dev
+Compile:
+gcc -o mqtt_publisher mqtt_publisher.c -lpaho-mqtt3c -ljansson
